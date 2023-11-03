@@ -1,0 +1,3 @@
+selenium==4.9.1
+PyVirtualDisplay==3.0
+pyperclip
