@@ -41,7 +41,18 @@ def send_message(message: str, attachment: UploadFile = File(None)):
             buffer.write(attachment.file.read())
         #set the attachment to absolute path of the file pwd + file_name
         attachment = os.getcwd() + "/" + file_name
-    return {"response": llm_utils.send_message(message, attachment)}
+        print(message,attachment)
+        response,conversation_id = llm_utils.send_message(message, attachment)
+    else:
+        response,conversation_id = llm_utils.send_message(message)
+    if response is None:
+        return{"response":"client is not initialized", conversation_id: None}
+    return {"response": response, "conversation_id": conversation_id}
 
+@app.post("/reset_conversation")
+def reset_conversation():
+    resp=llm_utils.reset_conversation()
+    return {"status": resp}
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=7000)
+    #run with debug mode on
+    uvicorn.run(app, host="0.0.0.0", port=7000, log_level="debug")

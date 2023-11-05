@@ -570,9 +570,14 @@ class ChatGPT:
             assert self._model in [2, 3], "Only GPT-4 (2) and GPT-4 Code Interpreter (3) support attachments"
             
             wait = WebDriverWait(self.driver, 60)
-            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[type='button'] input[type='file']")))
-            
-            file_input = self.driver.find_element(By.CSS_SELECTOR, "div[type='button'] input[type='file']")
+            button_xpath = "//button[contains(@aria-label, 'Attach files')]"
+            wait.until(EC.presence_of_element_located((By.XPATH, button_xpath)))
+            input_xpath = "//input[@type='file']"
+            file_input = self.driver.find_element(By.XPATH, input_xpath)
+            #clear the file input first
+            #send the attachment
+            form = self.driver.execute_script("return arguments[0].form;", file_input)
+            self.driver.execute_script("arguments[0].reset();", form)
             file_input.send_keys(attachment)
 
             # Wait until it finishes uploading
