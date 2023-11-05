@@ -13,9 +13,15 @@ def init_client(session_token):
     )
 
 #send message
-def send_message(message,attachment=None):
+def send_message(message,attachment=None,conversation_id=""):
     if api is None:
         return None,None
+    #check if conversation id is not empty
+    if conversation_id != "":
+        #check if current conversation id is not the same as the one passed in
+        if api._conversation_id != conversation_id:
+            api.switch_conversation(conversation_id)
+
     if attachment is None:
         x = api.send_message(
             message=message,

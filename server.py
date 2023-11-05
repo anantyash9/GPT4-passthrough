@@ -31,8 +31,9 @@ def init_api(session_token: str):
 
 @app.post("/send_message")
 #message is text and attachment is a file uploaded to the server
-def send_message(message: str, attachment: UploadFile = File(None)):
+def send_message(message: str,conversation_id:str="", attachment: UploadFile = File(None)):
     #save file to server
+
     if attachment is not None:
         #get the file name
         file_name = attachment.filename
@@ -42,9 +43,8 @@ def send_message(message: str, attachment: UploadFile = File(None)):
         #set the attachment to absolute path of the file pwd + file_name
         attachment = os.getcwd() + "/" + file_name
         print(message,attachment)
-        response,conversation_id = llm_utils.send_message(message, attachment)
-    else:
-        response,conversation_id = llm_utils.send_message(message)
+    response,conversation_id = llm_utils.send_message(message, attachment,conversation_id)
+
     if response is None:
         return{"response":"client is not initialized", conversation_id: None}
     return {"response": response, "conversation_id": conversation_id}
