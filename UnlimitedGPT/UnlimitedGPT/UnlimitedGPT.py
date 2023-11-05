@@ -308,25 +308,10 @@ class ChatGPT:
         """
         Gets the conversation ID.
         """
-        logs_raw = self.driver.get_log("performance")
-
-        conv_response_id = next(
-            log_["params"]["requestId"]
-            for log_ in reversed([loads(lr["message"])["message"] for lr in logs_raw])
-            if
-            log_["method"] == "Network.responseReceived"
-            # and json
-            and "json" in log_["params"]["response"]["mimeType"]
-            # and status 200
-            and log_["params"]["response"]["status"] == 200
-            # and conversations
-            and "/backend-api/conversations" in log_["params"]["response"]["url"]
-        )
-
-        ret = self.driver.execute_cdp_cmd("Network.getResponseBody", {"requestId": conv_response_id})
-
-        self._conversation_id = loads(ret["body"])["items"][0]["id"]
-
+        current_url = self.driver.current_url
+        print("The current URL is:", current_url)
+        #last part of the url is the conversation id
+        self._conversation_id = current_url.split("/")[-1]
         self.logger.debug(f"Conversation id: {self._conversation_id}")
 
     def _open_shared_conversations_popup(self):
